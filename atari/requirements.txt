@@ -1,0 +1,2 @@
+gym[atari,accept-rom-license]==0.26.2
+git+https://github.com/takuseno/d4rl-atari

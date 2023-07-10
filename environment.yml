@@ -1,0 +1,17 @@
+name: defog_ts
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.10.9
+  - pytorch=2.0.1
+  - pytorch-cuda=11.7
+  - pip=23.0.1
+  - pip:
+      - dotmap==1.3.30
+      - gymnasium==0.27.1
+      - hydra-core==1.3.2
+      - matplotlib==3.7.1
+      - numpy==1.23.5
+      - omegaconf==2.3.0

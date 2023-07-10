@@ -1,0 +1,64 @@
+defaults:
+  - _self_
+  - env: breakout
+
+seeds: 
+- 0
+- 1
+- 2
+# - 42
+# - 3407 # https://arxiv.org/abs/2109.08203
+
+tag: null
+vec_envs: 1
+drop_aware: True
+
+train:
+  lr: 3e-4
+  weight_decay: 0.1
+  vec_envs: ${vec_envs}
+  env_name: ${env.env_name}
+  train_steps: 100_000
+  finetune_steps: 10_000
+  batch_size: 128
+  plot_interval: 500
+  eval_interval: 500
+  eval_episodes: 5
+  warmup_tokens: 375e6
+  final_tokens: 260e9
+  rtg_target: ${env.rtg_target}
+  eval_drop_ps: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+
+buffer:
+  _target_: buffer.AtariBuffer
+  dataset_type: expert
+  stack_frame: 4
+  sample_type: traj_length
+  context_len: ${model.context_len}
+  drop_cfg:
+    drop_fn: const
+    drop_p: 0.5
+    finetune_drop_p: 0.5
+    update_interval: 1000
+    drop_aware: ${drop_aware}
+  
+model:
+  _target_: model.DecisionTransformer
+  n_blocks: 6
+  n_heads: 8
+  drop_p: 0.1
+  hidden_dim: 128
+  context_len: 30
+  reward_scale: 1
+  max_timestep: ${env.max_timestep}
+  drop_aware: ${drop_aware}
+  cnn_channels: [32, 64, 64]
+  cnn_kernels: [8, 4, 3]
+  cnn_strides: [4, 2, 1]
+  cnn_paddings: [0, 0, 0]
+
+hydra:
+  job:
+    chdir: true
+  run:
+    dir: ./runs/${now:%Y-%m-%d}/${now:%H-%M-%S}_${hydra.job.override_dirname}
